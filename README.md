@@ -1,2 +1,2 @@
-### Run Flask app with automatically change
+## Run Flask app with automatically change
 flask --app app.py --debug run
