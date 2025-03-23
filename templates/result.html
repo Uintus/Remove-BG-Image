@@ -16,111 +16,125 @@
   </style>
  </head>
 
- <body class="bg-white">
-    <!-- navbar -->
-    <header class="bg-white fixed top-0 left-0 w-full shadow">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <div class="flex">
-                <img src="https://t3.ftcdn.net/jpg/05/77/03/46/360_F_577034642_ond0dBvaoc0mbP7KYdfZmDEFCySLWSpZ.jpg" 
-                alt="logo" 
-                class="w-20 h-20 rounded-lg">
+    <body class="bg-white flex flex-col min-h-screen">
+        <!-- navbar -->
+        <header class="bg-white fixed top-0 left-0 w-full shadow">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <div class="flex">
+                    <img src="https://t3.ftcdn.net/jpg/05/77/03/46/360_F_577034642_ond0dBvaoc0mbP7KYdfZmDEFCySLWSpZ.jpg" 
+                    alt="logo" 
+                    class="w-20 h-20 rounded-lg">
+                </div>
+                <nav class="relative">
+                    <ul class="flex space-x-8">
+                        <li>
+                            <a class="text-gray-600 hover:text-gray-800" href="index.html" onclick="scrollToTop()">
+                                Home
+                            </a>
+                        </li>
+                
+                        <li class="relative">
+                            <a class="text-gray-600 hover:text-gray-800 cursor-pointer" id="ai-generate">
+                                AI Generated
+                            </a>
+                        </li>
+                
+                        <li>
+                            <a class="text-gray-600 hover:text-gray-800" href="#">
+                                Contact
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
-            <nav class="relative">
-            <ul class="flex space-x-4">
-            <li>
-                <a class="text-gray-600 hover:text-gray-800" href="#" onclick="scrollToTop()">
-                    Home
-                </a>
-            </li>
-    
-            <li class="relative">
-            <a class="text-gray-600 hover:text-gray-800 cursor-pointer" id="features-link" onclick="scrollToFeatures()">
-                Features
-            </a>
-            </li>
-    
-            <li>
-            <a class="text-gray-600 hover:text-gray-800" href="#">
-                Contact
-            </a>
-            </li>
-            </ul>
-            </nav>
-        </div>
         </header>
 
-    <!-- main content -->
-    <main class="container mx-auto px-4">
-    <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 max-w-4xl mx-auto py-20 pt-40">
-        <!-- video display-->
-        <div class="w-full md:w-1/2 h-full">
-            <video class="w-full h-full object-cover rounded-lg" autoplay loop muted>
-                <source src="https://storyblok-cdn.photoroom.com/f/191576/x/e866fd84ee/removebackground-animation_h-264.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
+        <!-- main content -->
+        <main class="container mx-auto px-4 flex-grow">
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 max-w-4xl mx-auto py-20 pt-40">
+                <!-- result display-->
+                <img 
+                    class="object-cover rounded-lg"
+                    id="resultImage" 
+                    alt="Kết quả ảnh" 
+                    src="https://i.pinimg.com/originals/df/db/c7/dfdbc73a7622c6eb606035f2f04f9e45.gif"
+                />
 
-        <!-- remove bg - image upload -->
-        <div class=" pt-10 px-6 w-full md:w-1/2 h-full flex flex-col items-center justify-center space-y-4">
-        <div class="w-full">
-            
-            <!-- title -->
-            <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold text-gray-800 ">
-                Remove Background from Your Images
-                </h2> 
-            </div>
-
-            <!-- file upload -->
-            <div id="upload-area" class="text-center flex items-center justify-center border-2 border-dashed border-gray-400 bg-white text-gray-400 rounded-lg cursor-pointer hover:bg-gray-200 hover:text-gray-500 transition-colors duration-200 py-12 shadow-lg">
-                <input type="file" id="file-input" class="hidden" accept="image/*">
-                <p id="upload-text">Drag and drop your image here
-                    <br>or paste image with <kbd class="bg-gray-200 rounded px-2">Ctrl + V</kbd>
-                </p>
-                <div id="image-preview" class="hidden relative">
-                    <img id="preview-img" class="mt-2 rounded-lg w-32 h-32 object-cover" />
-                    <button id="remove-btn" class="absolute top-1 right-1 text-red-500 p-1 text-xs">x</button>
+                <!-- remove bg - image upload -->
+                <div class=" pt-10 px-6 w-full md:w-1/2 h-full flex flex-col items-center justify-center space-y-4">
+                <div class="w-full">
+                    
+                    <!-- title -->
+                    <div class="text-center mb-10">
+                        <h2 class="text-3xl font-bold text-gray-800 ">
+                            Free Online Background Generator
+                        </h2> 
+                        <p class="text-xs mt-4 text-gray-500">Remove and replace backgrounds to make your product stand out.</p>
+                        <button 
+                            id="generate-btn" 
+                            class="w-full bg-blue-500 text-white rounded-lg p-2 cursor-pointer text-center shadow hover:bg-blue-600 active:bg-blue-700 transition duration-150 ease-in-out mt-10"
+                            >
+                            Make AI Background Now
+                        </button>
+                    </div>
+                    </div>
                 </div>
             </div>
-            <button 
-                id="submit-btn" 
-                class="hidden w-full bg-blue-500 text-white rounded-lg p-2 cursor-pointer text-center shadow hover:bg-blue-600 active:bg-blue-700 transition duration-150 ease-in-out mt-10"
-                >
-                remove bg
-            </button>
+
+
+            <!-- AI Background Generator -->
+            <div id="ai-background-generator" class="hidden w-full p-4 mt-6">
+                <h1 class="text-3xl font-bold text-center">AI Background Generator</h1>
+                <p class="text-center text-gray-600 mt-2">Create digital masterpieces with our AI background generator</p>
+                
+                <div class="max-w-2xl mx-auto">
+                    
+                    <div class="relative">
+                        <input type="text" class="text-xs mt-4 w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Describe what you want to see, e.g., Rainy day in Paris in the style of oil painting">
+                        <button class="absolute right-2 top-6 bg-blue-500 text-white font-bold py-2 px-2 text-xs rounded-lg hover:bg-blue-600">Generate</button>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 mt-6">
+                        <img src="https://i.pinimg.com/originals/df/db/c7/dfdbc73a7622c6eb606035f2f04f9e45.gif" alt="Bg 1" class="w-full h-auto rounded-lg">
+                        <img src="https://i.pinimg.com/originals/df/db/c7/dfdbc73a7622c6eb606035f2f04f9e45.gif" alt="Bg 2" class="w-full h-auto rounded-lg">
+                        <img src="https://i.pinimg.com/originals/df/db/c7/dfdbc73a7622c6eb606035f2f04f9e45.gif" alt="Bg 3" class="w-full h-auto rounded-lg">
+                        <img src="https://i.pinimg.com/originals/df/db/c7/dfdbc73a7622c6eb606035f2f04f9e45.gif" alt="Bg 4" class="w-full h-auto rounded-lg">
+                        <img src="https://i.pinimg.com/originals/df/db/c7/dfdbc73a7622c6eb606035f2f04f9e45.gif" alt="Bg 5" class="w-full h-auto rounded-lg">
+                        <img src="https://i.pinimg.com/originals/df/db/c7/dfdbc73a7622c6eb606035f2f04f9e45.gif" alt="Bg 6" class="w-full h-auto rounded-lg">
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
+            <!-- privacy policy... -->
+            <div class="mt-4 text-center text-xs text-gray-500">
+                <p class="whitespace-nowrap text-xs">
+                By uploading an image or URL you agree to our
+                <a class="text-blue-500 hover:underline" href="#">
+                Terms of Service
+                </a>
+                . This site is protected by reCaptcha and its
+                <a class="text-blue-500 hover:underline" href="#">
+                Privacy Policy
+                </a>
+                and
+                <a class="text-blue-500 hover:underline" href="#">
+                Terms of Service
+                </a>
+                apply.
+                </p>
+            </div>
+        </main>
 
-    <!-- privacy policy... -->
-    <div class="mt-4 text-center text-xs text-gray-500">
-        <p class="whitespace-nowrap text-xs">
-        By uploading an image or URL you agree to our
-        <a class="text-blue-500 hover:underline" href="#">
-        Terms of Service
-        </a>
-        . This site is protected by reCaptcha and its
-        <a class="text-blue-500 hover:underline" href="#">
-        Privacy Policy
-        </a>
-        and
-        <a class="text-blue-500 hover:underline" href="#">
-        Terms of Service
-        </a>
-        apply.
-        </p>
-    </div>
-    </main>
+        <!-- footer -->
+        <footer class="bg-gray-900 shadow mt-8">
+            <div class="container mx-auto px-4 py-2 text-center">
+                <p class="text-gray-200 text-xs my-2">
+                © 2023 Remove Background. All rights reserved.
+                </p>
+            </div>
+        </footer>
 
-    <!-- footer -->
-    <footer class="bg-gray-900 shadow mt-8">
-    <div class="container mx-auto px-4 py-2 text-center">
-        <p class="text-gray-200 text-xs my-2">
-        © 2023 Remove Background. All rights reserved.
-        </p>
-    </div>
-    </footer>
+        <script src="result.js"></script>
 
- </body>
+    </body>
 </html>
