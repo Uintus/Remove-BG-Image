@@ -16,47 +16,108 @@ if not os.path.exists(UPLOAD_FOLDER):
 @app.route('/upload', methods=['POST'])
 def upload_image():
     if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+        return jsonify({
+            "status": "error",
+            "code": "400",
+            "message": "No file part"
+        }), 400
     
     file = request.files['file']
     if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+        return jsonify({
+            "status": "error",
+            "code": "400",
+            "message": "No selected file"
+        }), 400
     
-    # Lưu ảnh tải lên
-    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-    file.save(file_path)
-    
-    return jsonify({"message": "File uploaded successfully", "file_path": file_path}), 200
+    try:
+        # Lưu ảnh tải lên
+        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(file_path)
+        
+        # Trả về kết quả thành công
+        return jsonify({
+            "status": "success",
+            "code": "200",
+            "data": {
+                "file_path": file_path,
+                "message": "File uploaded successfully"
+            }
+        }), 200
+    except Exception as e:
+        # Trả về kết quả lỗi nếu có lỗi xảy ra
+        return jsonify({
+            "status": "error",
+            "code": "500",
+            "message": str(e)
+        }), 500
 
-# Endpoint để lấy ảnh đã xóa nền
+# Endpoint để lấy ảnh đã xóa nền (giả lập)
 @app.route('/result', methods=['GET'])
 def get_result():
     file_path = request.args.get('file_path')
     if not file_path or not os.path.exists(file_path):
-        return jsonify({"error": "File not found"}), 404
+        return jsonify({
+            "status": "error",
+            "code": "404",
+            "message": "File not found"
+        }), 404
     
-    # Xóa nền ảnh (Mock test trả về chính ảnh gốc)
-    result_path = file_path # Không thay đổi hình ảnh
-    
-    return send_file(result_path, mimetype='image/png')
+    try:
+        # Giả lập xóa nền: Trả về chính ảnh gốc
+        return jsonify({
+            "status": "success",
+            "code": "200",
+            "data": {
+                "file_path": file_path,
+                "message": "Background removed successfully"
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "code": "500",
+            "message": str(e)
+        }), 500
 
 
-# Endpoint để lấy ảnh đã kết hợp với nền mới
+
+# Endpoint để lấy ảnh đã kết hợp với nền mới (giả lập)
 @app.route('/combine', methods=['GET'])
 def combine_background():
     file_path = request.args.get('file_path')
     background_path = request.args.get('background_path')
     
     if not file_path or not os.path.exists(file_path):
-        return jsonify({"error": "File not found"}), 404
+        return jsonify({
+            "status": "error",
+            "code": "404",
+            "message": "File not found"
+        }), 404
     
     if not background_path or not os.path.exists(background_path):
-        return jsonify({"error": "Background file not found"}), 404
+        return jsonify({
+            "status": "error",
+            "code": "404",
+            "message": "Background file not found"
+        }), 404
     
-    # Giả lập kết hợp nền: Trả về ảnh nền mới
-    combined_path = background_path  # Trả về ảnh nền mới
-    
-    return send_file(combined_path, mimetype='image/png')
+    try:
+        # Giả lập kết hợp nền: Trả về ảnh nền mới
+        return jsonify({
+            "status": "success",
+            "code": "200",
+            "data": {
+                "file_path": background_path,
+                "message": "Background combined successfully"
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "code": "500",
+            "message": str(e)
+        }), 500
 
 @app.route("/")
 def hello_world():
