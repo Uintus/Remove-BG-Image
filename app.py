@@ -3,6 +3,7 @@ from model.demo import format_date, generate_greeting
 import datetime
 import os
 import uuid
+from io import BytesIO
 
 app = Flask(__name__)
 
@@ -35,15 +36,8 @@ def upload_image():
         file_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(file_path)
         
-        # Trả về kết quả thành công
-        return jsonify({
-            "status": "success",
-            "code": "200",
-            "data": {
-                "file_path": file_path,
-                "message": "File uploaded successfully"
-            }
-        }), 200
+        # Trả về ảnh trực tiếp
+        return send_file(file_path, mimetype='image/jpeg')
     except Exception as e:
         # Trả về kết quả lỗi nếu có lỗi xảy ra
         return jsonify({
@@ -65,22 +59,13 @@ def get_result():
     
     try:
         # Giả lập xóa nền: Trả về chính ảnh gốc
-        return jsonify({
-            "status": "success",
-            "code": "200",
-            "data": {
-                "file_path": file_path,
-                "message": "Background removed successfully"
-            }
-        }), 200
+        return send_file(file_path, mimetype='image/jpeg')
     except Exception as e:
         return jsonify({
             "status": "error",
             "code": "500",
             "message": str(e)
         }), 500
-
-
 
 # Endpoint để lấy ảnh đã kết hợp với nền mới (giả lập)
 @app.route('/combine', methods=['GET'])
@@ -104,14 +89,7 @@ def combine_background():
     
     try:
         # Giả lập kết hợp nền: Trả về ảnh nền mới
-        return jsonify({
-            "status": "success",
-            "code": "200",
-            "data": {
-                "file_path": background_path,
-                "message": "Background combined successfully"
-            }
-        }), 200
+        return send_file(background_path, mimetype='image/jpeg')
     except Exception as e:
         return jsonify({
             "status": "error",
