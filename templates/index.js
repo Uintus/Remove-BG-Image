@@ -35,11 +35,15 @@ function handleFileSelect(files) {
     if (files.length > 0) {
         const file = files[0]; 
         if (file.type.startsWith('image/')) {
-            const imgURL = URL.createObjectURL(file);
-            previewImg.src = imgURL;
-            imagePreview.classList.remove('hidden');
-            uploadText.classList.add('hidden');
-            submitBtn.classList.remove('hidden');
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                localStorage.setItem('uploadedImage', reader.result);
+                previewImg.src = reader.result; 
+                imagePreview.classList.remove('hidden');
+                uploadText.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
         } else {
             alert('Please select an image file!');
         }
@@ -94,31 +98,13 @@ function scrollToFeatures() {
 
 submitBtn.addEventListener('click', (event) => {
     event.preventDefault(); 
-    const apiUrl = 'https://api.example.com/remove-background'; 
 
-    const formData = new FormData();
     const file = fileInput.files[0];
     if (file) {
-        formData.append('image', file); 
+        const imgURL = URL.createObjectURL(file);
+        localStorage.setItem('uploadedImage', imgURL);  
 
-        fetch(apiUrl, {
-            method: 'POST',
-            body: formData,
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Success:', data);
-            localStorage.setItem('processedImage', data.image);
-            window.location.href = 'result.html';
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+        window.location.href = 'result.html';
     } else {
         alert('Please upload an image first.');
     }
