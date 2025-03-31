@@ -15,6 +15,8 @@ def text_to_image():
     from pyngrok import ngrok
     import io
     from flask import Flask, request, send_file, jsonify
+    from PIL import Image
+    import numpy as np
     
 
     # Download model
@@ -25,9 +27,9 @@ def text_to_image():
     ngrok_tunnel = ngrok.connect(5000, domain="pony-beloved-positively.ngrok-free.app")
     print(f"Public URL: {ngrok_tunnel.public_url}")
     
-
     # Khởi tạo Flask
     app = Flask(__name__)
+
 
     @app.route("/generate", methods=["POST"])
     def generate_image():
@@ -52,6 +54,47 @@ def text_to_image():
         print("✅ Ảnh đã tạo xong, gửi về client!")
 
         return send_file(img_io, mimetype="image/png")
+    
+    @app.route("/add-background", methods=["POST"])
+    def add_background_to_image():
+        if "image" not in request.files or "background" not in request.files:
+            return {"error": "Please upload both the main image and the background!"}, 400
+
+        image = Image.open(request.files["image"])
+        background = Image.open(request.files["background"])
+
+        result = add_background(image, background)
+
+        # Chuyển kết quả thành file ảnh để trả về
+        img_io = io.BytesIO()
+        result.save(img_io, format="PNG")
+        img_io.seek(0)
+
+        return send_file(img_io, mimetype="image/png")
+    
+
+    # ______________________FUNCTION___________________________
+    def add_background(foreground, background):
+        # Chuyển ảnh về RGBA nếu chưa có alpha channel
+        foreground = foreground.convert("RGBA")
+        background = background.convert("RGBA")
+
+        # Resize background theo kích thước ảnh chính
+        background = background.resize(foreground.size)
+
+        # Chuyển ảnh thành array numpy
+        fg_array = np.array(foreground)
+        bg_array = np.array(background)
+
+        # Tách các kênh màu và alpha
+        fg_rgb, fg_alpha = fg_array[:, :, :3], fg_array[:, :, 3] / 255.0
+        bg_rgb = bg_array[:, :, :3]
+
+        # Tạo ảnh hợp nhất
+        result_rgb = (fg_rgb * fg_alpha[:, :, None] + bg_rgb * (1 - fg_alpha[:, :, None])).astype(np.uint8)
+        result = Image.fromarray(result_rgb)
+
+        return result
 
     # Chạy Flask API
     app.run(port=5000)
