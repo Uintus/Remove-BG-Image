@@ -6,7 +6,12 @@ _flask --app app.py --debug run_
    _pip freeze > requirements.txt_
 - Run this cmd if your project is lack of some libraries(as npm install):
    _pip install -r requirements.txt_
+  
+## Recreate .venv 
+_python -m venv .venv_
 
+## Run virtual environment
+_.venv\Scripts\activate_
 
 ## Explain Folders
 # model
