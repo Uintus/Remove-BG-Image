@@ -5,6 +5,8 @@ const uploadArea = document.getElementById('upload-area');
 const colorInput = document.getElementById('colorInput');
 
 let selectedColumn = null;
+let uploadedImage = null;  
+let selectedBackground = null;  
 
 function showImage(type, element) {
     if (selectedColumn) {
@@ -17,19 +19,41 @@ function showImage(type, element) {
 
     let imageUrl;
     if (type === 'original') {
-        const originalImage = localStorage.getItem('uploadedImage');
-        imageUrl = originalImage ? originalImage : 'https://i.pinimg.com/originals/df/db/c7/dfdbc73a7622c6eb606035f2f04f9e45.gif'; 
+        imageUrl = uploadedImage ? uploadedImage : 'https://i.pinimg.com/originals/df/db/c7/dfdbc73a7622c6eb606035f2f04f9e45.gif'; 
     } else if (type === 'removed') {
-        const urlParams = new URLSearchParams(window.location.search);
-        imageUrl = urlParams.get('processedImage') ? urlParams.get('processedImage') : 'https://www.avaide.com/images/online-bg-remover/remove-bg.png'; 
+        imageUrl = selectedBackground ? selectedBackground : 'https://www.avaide.com/images/online-bg-remover/remove-bg.png'; 
     }
     displayImage(imageUrl);
+
+    const originalIndicator = document.getElementById('originalIndicator');
+    const removedIndicator = document.getElementById('removedIndicator');
+
+    if (type === 'original') {
+        removedIndicator.style.transition = ''; 
+        removedIndicator.style.transform = `translateX(${element.offsetLeft}px)`;
+        setTimeout(() => {
+            originalIndicator.classList.remove('hidden');
+            removedIndicator.classList.add('hidden');
+            originalIndicator.style.transition = 'transform 0.5s'; 
+            originalIndicator.style.transform = `translateX(0)`;
+        }, 10);
+    } else {
+        originalIndicator.style.transition = ''; 
+        originalIndicator.style.transform = `translateX(${element.offsetLeft}px)`;
+        setTimeout(() => {
+            removedIndicator.classList.remove('hidden');
+            originalIndicator.classList.add('hidden');
+            removedIndicator.style.transition = 'transform 0.5s'; 
+            removedIndicator.style.transform = `translateX(0)`;
+        }, 10);
+    }
 }
+
 document.addEventListener('DOMContentLoaded', () => {
     const originalImage = localStorage.getItem('uploadedImage');
     if (originalImage) {
-        const resultImg = document.getElementById('result');
-        resultImg.src = originalImage; // Cập nhật src của hình ảnh
+        uploadedImage = originalImage; 
+        result.src = originalImage;  
     } else {
         console.error("No image found in localStorage.");
     }
@@ -52,8 +76,9 @@ fileInput.addEventListener('change', (event) => {
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            displayImage(e.target.result);
-            localStorage.setItem('uploadedImage', e.target.result); // Lưu vào localStorage
+            uploadedImage = e.target.result; 
+            displayImage(uploadedImage);  
+            localStorage.setItem('uploadedImage', uploadedImage); 
         };
         reader.readAsDataURL(file);
     }
@@ -63,37 +88,92 @@ fileInput.addEventListener('change', (event) => {
 const defaultImages = document.querySelectorAll('.grid img');
 defaultImages.forEach(img => {
     img.addEventListener('click', () => {
-        displayImage(img.src);
+        selectedBackground = img.src; 
+        displayImage(selectedBackground);  
     });
 });
 
 // Event listener for color input
 colorInput.addEventListener('input', (event) => {
     const color = event.target.value;
-    result.style.backgroundColor = color; // Change background color of the image container
+    selectedBackground = color; 
+    result.style.backgroundColor = selectedBackground; 
 });
 
 // Event listener for color divs
-const colorDivs = document.querySelectorAll('.flex-wrap > div'); // Select all color divs
+const colorDivs = document.querySelectorAll('.flex-wrap > div');  
 colorDivs.forEach(div => {
     div.addEventListener('click', () => {
-        const color = getComputedStyle(div).backgroundColor; // Get the computed background color
-        result.style.backgroundColor = color; 
+        const color = getComputedStyle(div).backgroundColor;  
+        selectedBackground = color; 
+        result.style.backgroundColor = selectedBackground;
     });
 });
 
-// Tải xuống hình ảnh
+// Download confirmation popup
+const downloadPopup = document.getElementById('downloadPopup');
+const confirmDownloadBtn = document.getElementById('confirmDownloadBtn');
+const cancelDownloadBtn = document.getElementById('cancelDownloadBtn');
+const toast = document.getElementById('toast');
+
 downloadBtn.addEventListener('click', () => {
-    const confirmDownload = confirm("Do you want to download this image?");
-    if (confirmDownload) {
-        const link = document.createElement('a');
-        link.href = result.src; 
-        link.download = 'downloaded_image.png'; 
-        document.body.appendChild(link);
-        link.click(); 
-        document.body.removeChild(link); 
-    }
+    downloadPopup.classList.remove('hidden');
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+confirmDownloadBtn.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.href = result.src; 
+    link.download = 'downloaded_image.png'; 
+    document.body.appendChild(link);
+    link.click(); 
+    document.body.removeChild(link); 
+
+    showToast("Image downloaded successfully!");
+    downloadPopup.classList.add('hidden'); 
+});
+
+cancelDownloadBtn.addEventListener('click', () => {
+    downloadPopup.classList.add('hidden'); 
+});
+
+//toast
+function showToast(message) {
+    toast.classList.remove('hidden');
+    toast.textContent = message;
+    setTimeout(() => {
+        toast.classList.add('hidden');
+    }, 5000);
+}
+
+// Generate button logic
+const generateButton = document.querySelector('button.mt-4.bg-blue-500'); 
+const modal = document.getElementById('modal');
+const loading = document.getElementById('loading');
+const generatedImage = document.getElementById('generatedImage');
+const applyBtn = document.getElementById('applyBtn');
+const closeModalBtn = document.getElementById('closeModalBtn');
+
+generateButton.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+    loading.classList.remove('hidden');
+    generatedImage.classList.add('hidden');
+    applyBtn.classList.add('hidden');
+
+    setTimeout(() => {
+        const imageUrl = 'https://i.pinimg.com/originals/df/db/c7/dfdbc73a7622c6eb606035f2f04f9e45.gif'; 
+        loading.classList.add('hidden');
+        generatedImage.src = imageUrl;
+        generatedImage.classList.remove('hidden');
+        applyBtn.classList.remove('hidden');
+    }, 3000);
+});
+
+applyBtn.addEventListener('click', () => {
+    const imageUrl = generatedImage.src; 
+    displayImage(imageUrl);  
+    modal.classList.add('hidden');  
+});
+ 
+closeModalBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');  
 });
