@@ -1,6 +1,5 @@
 from io import BytesIO
 from flask import Flask, render_template, send_file
-from model.demo import format_date, generate_greeting
 import datetime
 from diffusers import DiffusionPipeline
 from flask import Flask, request, jsonify
@@ -10,14 +9,50 @@ from io import BytesIO
 
 app = Flask(__name__)
 
+# ________________________ROUTES___________________________
+
+
+
+
+# ________________________API___________________________
+
 # URL Google Colab
 NGROK_URL = "https://pony-beloved-positively.ngrok-free.app"
+  
+# REMOVE BACKGROUND IMAGE  
+@app.route("/remove-background", methods=["POST"])
+def remove_background_image():
+    if "image" not in request.files:
+        return jsonify({
+            "status": "error",
+            "code": response.status_code,
+            "data": "Please upload an image"}), 400
 
-@app.route("/")
-def hello_world():
-    today = datetime.datetime.now()
-    return f"Hôm nay là {format_date(today)}. {generate_greeting('Tuyet')}"
+    # Nhận file ảnh từ request
+    image_file = request.files["image"]
 
+    # 🔹 Chuyển file thành định dạng gửi đi (multipart/form-data)
+    files = {
+    "image": (image_file.filename, image_file.stream, image_file.content_type),
+    }
+
+    # Gửi request đến Google Colab
+    response = requests.post(f"{NGROK_URL}/remove-background", files=files)
+
+    if response.status_code == 200:
+        image_data = BytesIO(response.content)
+
+        print("✅ Background Image successfully removed!")
+
+        return send_file(image_data, mimetype="image/png")
+
+    else:
+        print("❌ Error generating image:", response.text)
+        return jsonify({
+            "status": "error",
+            "code": response.status_code,
+            "data": response.text
+        })
 
 
 # GENERATE IMAGE FROM TEXT 
@@ -54,9 +89,7 @@ def generate_image():
             "code": response.status_code,
             "data": response.text
         }), response.status_code
-
-
-
+        
 
 # ADD IMAGE BACKGROUND
 @app.route("/add-background", methods=["POST"])
