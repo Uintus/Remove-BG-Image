@@ -10,6 +10,9 @@ _flask --app app.py --debug run_
 ## Recreate .venv 
 _python -m venv .venv_
 
+## Run virtual environment
+_.venv\Scripts\activate_
+
 ## Explain Folders
 # model
 Contain model functions to import
