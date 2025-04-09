@@ -2,8 +2,7 @@
 _flask --app app.py --debug run_
 
 ## Requirement when add a new library
-- After add, run this cmd:
-   _pip freeze > requirements.txt_
+- After add a library, add it to requirements.txt file 
 - Run this cmd if your project is lack of some libraries(as npm install):
    _pip install -r requirements.txt_
   
