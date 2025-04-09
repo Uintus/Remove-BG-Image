@@ -146,7 +146,7 @@ function showToast(message) {
 }
 
 // Generate button logic
-const generateButton = document.querySelector('button.mt-4.bg-blue-500'); 
+const generateButton = document.querySelector('.generate-button'); 
 const modal = document.getElementById('modal');
 const loading = document.getElementById('loading');
 const generatedImage = document.getElementById('generatedImage');

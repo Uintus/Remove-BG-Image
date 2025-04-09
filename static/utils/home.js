@@ -1,10 +1,7 @@
 const uploadArea = document.getElementById('upload-area');
 const fileInput = document.getElementById('file-input');
 const uploadText = document.getElementById('upload-text');
-const imagePreview = document.getElementById('image-preview');
-const previewImg = document.getElementById('preview-img');
-const removeBtn = document.getElementById('remove-btn');
-const submitBtn = document.getElementById('submit-btn');
+
 
 uploadArea.addEventListener('click', () => {
     fileInput.click();
@@ -50,14 +47,6 @@ function handleFileSelect(files) {
     }
 }
 
-removeBtn.addEventListener('click', (event) => {
-    event.stopPropagation(); 
-    previewImg.src = '';
-    imagePreview.classList.add('hidden');
-    uploadText.classList.remove('hidden');
-    submitBtn.classList.add('hidden');
-    fileInput.value = '';  
-});
 
 document.addEventListener('paste', (event) => {
     const items = event.clipboardData.items;
@@ -95,17 +84,3 @@ function scrollToFeatures() {
     });
 }
 
-
-submitBtn.addEventListener('click', (event) => {
-    event.preventDefault(); 
-
-    const file = fileInput.files[0];
-    if (file) {
-        const imgURL = URL.createObjectURL(file);
-        localStorage.setItem('uploadedImage', imgURL);  
-
-        window.location.href = 'result.html';
-    } else {
-        alert('Please upload an image first.');
-    }
-});

@@ -1,5 +1,5 @@
 from io import BytesIO
-from flask import Flask, render_template, send_file
+from flask import Flask, render_template, send_file, url_for
 import datetime
 from diffusers import DiffusionPipeline
 from flask import Flask, request, jsonify
@@ -10,8 +10,13 @@ from io import BytesIO
 app = Flask(__name__)
 
 # ________________________ROUTES___________________________
+@app.route("/")
+def index():
+    return render_template('home.html')
 
-
+@app.route("/remove-bg")
+def remove_background():
+    return render_template('remove-bg.html')
 
 
 # ________________________API___________________________
@@ -62,11 +67,9 @@ def generate_image():
         return jsonify({"error": "Unsupported Media Type", "message": "Use 'application/json'"}), 415
     
     data = request.json
-    elements = data.get("elements", "")
-    style = data.get("style", "")
-    preferred_colors = data.get("preferred_colors", "")
+    background_text = data.get("background_text")
     
-    prompt = f"Create a high-quality background image featuring the following elements: {elements}. The image should have a {style} style, with a color palette of {preferred_colors}. Ensure a visually appealing composition that is not too cluttered, making it suitable as a background."
+    prompt = f"Create a high-quality background image featuring the following requirement: {background_text}. Ensure a visually appealing composition that is not too cluttered, making it suitable as a background."
     
     # Gửi request đến Google Colab
     response = requests.post(f"{NGROK_URL}/generate", json={"prompt": prompt})
@@ -125,5 +128,7 @@ def add_background_to_image():
             "data": response.text
         })
 
+
+
 if __name__ == '__main__':
-    app.run(port=8080, debug=True)
+    app.run(debug=True)
